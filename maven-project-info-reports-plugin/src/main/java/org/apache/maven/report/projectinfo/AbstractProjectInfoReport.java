@@ -218,7 +218,7 @@ public abstract class AbstractProjectInfoReport
         Writer writer = null;
         try
         {
-            String filename = getOutputName() + ".html";
+            String filename = getOutputName() + getExt();
 
             DecorationModel model = new DecorationModel();
             model.setBody( new Body() );
@@ -231,12 +231,11 @@ public abstract class AbstractProjectInfoReport
             Artifact defaultSkin =
                 siteTool.getDefaultSkinArtifact( localRepository, project.getRemoteArtifactRepositories() );
 
-            SiteRenderingContext siteContext = siteRenderer.createContextForSkin( defaultSkin.getFile(), attributes,
-                                                                                  model, getName( locale ), locale );
+            SiteRenderingContext siteContext = getSiteRenderingContext( model, attributes, locale, defaultSkin );
 
             RenderingContext context = new RenderingContext( outputDirectory, filename );
 
-            SiteRendererSink sink = new SiteRendererSink( context );
+            SiteRendererSink sink = getSink( context );
 
             generate( sink, null, locale );
 
@@ -276,6 +275,23 @@ public abstract class AbstractProjectInfoReport
         {
             IOUtil.close( writer );
         }
+    }
+
+    protected SiteRenderingContext getSiteRenderingContext( DecorationModel model, Map<String, Object> attributes,
+                                    Locale locale, Artifact defaultSkin ) throws IOException 
+    {
+        return siteRenderer.createContextForSkin( defaultSkin.getFile(), attributes,
+                                                                              model, getName( locale ), locale );
+    }
+
+    protected SiteRendererSink getSink( RenderingContext context )
+    {
+        return new SiteRendererSink( context );
+    }
+
+    protected String getExt()
+    {
+        return ".html";
     }
 
     @Override
@@ -425,12 +441,14 @@ public abstract class AbstractProjectInfoReport
     protected abstract String getI18Nsection();
 
     /** {@inheritDoc} */
+    @Override
     public String getName( Locale locale )
     {
         return getI18nString( locale, "name" );
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getDescription( Locale locale )
     {
         return getI18nString( locale, "description" );
@@ -482,72 +500,84 @@ public abstract class AbstractProjectInfoReport
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getDefaultLanguage()
         {
             return locale.getLanguage();
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getDefaultCountry()
         {
             return locale.getCountry();
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getDefaultBundleName()
         {
             return bundleName;
         }
 
         /** {@inheritDoc} */
+        @Override
         public String[] getBundleNames()
         {
             return new String[] { bundleName };
         }
 
         /** {@inheritDoc} */
+        @Override
         public ResourceBundle getBundle()
         {
             return bundle;
         }
 
         /** {@inheritDoc} */
+        @Override
         public ResourceBundle getBundle( String bundleName )
         {
             return bundle;
         }
 
         /** {@inheritDoc} */
+        @Override
         public ResourceBundle getBundle( String bundleName, String languageHeader )
         {
             return bundle;
         }
 
         /** {@inheritDoc} */
+        @Override
         public ResourceBundle getBundle( String bundleName, Locale locale )
         {
             return bundle;
         }
 
         /** {@inheritDoc} */
+        @Override
         public Locale getLocale( String languageHeader )
         {
             return new Locale( languageHeader );
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getString( String key )
         {
             return getString( bundleName, locale, key );
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getString( String key, Locale locale )
         {
             return getString( bundleName, locale, key );
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getString( String bundleName, Locale locale, String key )
         {
             String value;
@@ -600,30 +630,35 @@ public abstract class AbstractProjectInfoReport
         }
 
         /** {@inheritDoc} */
+        @Override
         public String format( String key, Object arg1 )
         {
             return format( bundleName, locale, key, new Object[] { arg1 } );
         }
 
         /** {@inheritDoc} */
+        @Override
         public String format( String key, Object arg1, Object arg2 )
         {
             return format( bundleName, locale, key, new Object[] { arg1, arg2 } );
         }
 
         /** {@inheritDoc} */
+        @Override
         public String format( String bundleName, Locale locale, String key, Object arg1 )
         {
             return format( bundleName, locale, key, new Object[] { arg1 } );
         }
 
         /** {@inheritDoc} */
+        @Override
         public String format( String bundleName, Locale locale, String key, Object arg1, Object arg2 )
         {
             return format( bundleName, locale, key, new Object[] { arg1, arg2 } );
         }
 
         /** {@inheritDoc} */
+        @Override
         public String format( String bundleName, Locale locale, String key, Object[] args )
         {
             if ( locale == null )
